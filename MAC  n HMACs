@@ -1,0 +1,30 @@
+A Message Authentication Code (MAC) is a string of bits that is sent alongside a message. The MAC depends on the message itself and a secret key. No one should be able to compute a MAC without knowing the key. This allows two people who share a secret key to send messages to each without fear that someone else will tamper with the messages. (At least, if someone does tamper with a message, this can be detected by checking to see if the MAC is right.)
+
+The term "MAC" can refer to the *string of bits (also called a "tag")* or to the algorithm used to generate the tag.
+
+HMAC is a recipe for turning hash functions (such as MD5 or SHA256) into MACs. So HMAC-MD5 and HMAC-SHA256 are specific MAC algorithms, just like QuickSort is a specific sorting algorithm.
+
+There are other ways of constructing MAC algorithms; CMAC, for example, is a recipe for turning a blockcipher into a MAC (giving us CMAC-AES, CMAC-DES, CMAC-PRINCE, and the like).
+
+Some MAC algorithms use IVs. Others, such as HMAC, do not.
+
+MAC algorithms should have the security property of being unforgeable under chosen-message attacks. Let's say that Alice and Bob share a secret MAC key (which they use when sending messages to each other), and that Eve is spying on them and sees both their messages and the corresponding tags. Eve should not be able to use what she learns to fake valid tags. This should even be true if Eve can convince Bob to send specific messages.
+
+For example, pretend Eve tells Bob to send the message:
+
+Dear Alice,
+
+Eve said "hi."
+
+Love, Bob
+
+and then Eve sees the corresponding tag. Eve should still be unable to "fake" the tag for the message:
+
+Dear Alice,
+
+Please give Eve $100 for me. I'll pay you back.
+
+Love, Bob
+
+In addition to being unforgeable under chosen-message attacks (UF-CMA), HMAC has the stronger property of being a pseudo-random function (PRF). This means that if Eve doesn't know the key, then all of Bob's HMAC tags look like completely random strings of bits, even if Eve knows or even chooses what messages Bob sends. This is a stronger property because every PRF is UF-CMA (you can't guess a big random number), but not every UF-CMA MAC algorithm is a PRF (it's possible that for some MAC algorithm, all the tags begin with 10 zeroes --- not very random-looking at all, but the other bits could still be hard to guess without knowing the key).
+
